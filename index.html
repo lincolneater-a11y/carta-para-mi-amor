@@ -488,10 +488,10 @@ G[5]=function(b,end){
 var mn=document.getElementById('mn');mn.onclick=function(){showZone('p')};
 applyPF();
 
-var SUPA_URL='',SUPA_KEY='';
+var SUPA_URL='https://ryplmzexcjllihanfmyz.supabase.co',SUPA_KEY='sb_publishable_Y4QaoLNHzmu9zTKaxCgtsw_Px7FNqYg';
 var CL=null;try{CL=JSON.parse(localStorage.getItem('cl')||'null')}catch(e){}
 function setCL(){try{localStorage.setItem('cl',JSON.stringify(CL))}catch(e){}}
-function rpc(fn,body){return fetch(SUPA_URL.replace(/\/$/,'')+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY},body:JSON.stringify(body)}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
+function rpc(fn,body){return fetch(SUPA_URL.replace(/\/$/,'')+'/rest/v1/rpc/'+fn,{method:'POST',headers:SUPA_KEY.indexOf('sb_')===0?{'Content-Type':'application/json',apikey:SUPA_KEY}:{'Content-Type':'application/json',apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY},body:JSON.stringify(body)}).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})}
 function snap(){return {sc:score,won:won,st:stats,ach:ach,pf:PF}}
 var cqT=null;
 function cloudQ(){if(!CL||!SUPA_URL)return;clearTimeout(cqT);cqT=setTimeout(function(){rpc('guardar_perfil',{p_codigo:CL.c,p_pin:CL.p,p_datos:snap()}).catch(function(){})},3000)}
