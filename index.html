@@ -119,6 +119,7 @@ a.again{display:inline-block;text-decoration:none;color:var(--ink);font:600 1rem
 <button class="hud" id="hud" hidden></button>
 <button class="hud mus" id="mus" aria-label="Música">🎵</button>
 <button class="hud mn" id="mn" aria-label="Perfil y juegos">🎮</button>
+<button class="hud mn" id="sk" aria-label="Siguiente canción" style="left:112px" hidden>⏭</button>
 <div class="zone" id="zone" hidden><div class="zin" id="zin"></div></div>
 <div class="modal" id="modal" hidden><div class="mcard" id="mc"></div></div>
 <article class="letter" id="letter" aria-live="polite">
@@ -521,6 +522,25 @@ function cloudBind(zb){
   };
 }
 if(CL&&SUPA_URL)cloudLoad(CL.c,CL.p,function(r){if(r.estado==='ok'){mergeData(r.datos);save();upd();applyPF()}},true);
+
+var MUS=[["musica/player-uno.mp3", "Forma de nosotros 💞"], ["musica/modo-pareja.mp3", "Turno de amor 💕"], ["musica/nivel-neon.mp3", "Encendé la noche ✨"], ["musica/ayuda-co-op.mp3", "Apoyate en mí 🫶"], ["musica/respawn-con-perdon.mp3", "Perdón, mi amor 🥺"], ["musica/cristal-epico.mp3", "Luces de cristal 💎"], ["musica/patito-eliminado.mp3", "Otro patito cae 🦆"], ["musica/raid-de-mapaches.mp3", "Noche de mapaches 🦝🌙"], ["musica/boss-fantasma.mp3", "Cazafantasmas del amor 👻"], ["musica/guardado-eterno.mp3", "Nunca te suelto 💍"], ["musica/modo-vuelo.mp3", "Volá conmigo 🕊️"], ["musica/ojo-de-gato-pro.mp3", "Ojo de gatito 🐱"], ["musica/estrella-bonus.mp3", "Mi estrella 🌟"], ["musica/corazon-overpower.mp3", "Corazón radiactivo 💗"], ["musica/dance-battle.mp3", "Bailemos, mi vida 💃"], ["musica/loot-legendario.mp3", "Qué suerte tenerte 🍀"], ["musica/lluvia-de-xp.mp3", "Estrellas fugaces 🌠"], ["musica/cheat-code.mp3", "Ya te conozco de memoria 🧠"], ["musica/combo-x2.mp3", "Bailando juntos 🕺"], ["musica/cumbia-speedrun.mp3", "Cumbia enamorada 🪗"], ["musica/nivel-destructor.mp3", "Derrumbando muros 🧱💗"], ["musica/game-over-penas.mp3", "Chau penas, hola amor 👋"], ["musica/escudo-de-vidrio.mp3", "Corazón de vidrio 🫧"], ["musica/modo-nocturno.mp3", "Cielo de medianoche 🌙"], ["musica/press-start.mp3", "Empecemos ya 🚀"], ["musica/barra-de-vida.mp3", "Latido fuerte 💓"], ["musica/checkpoint-ok.mp3", "Todo bien entre nosotros 🤍"], ["musica/nueva-partida.mp3", "Enamorarme otra vez 🌷"], ["musica/power-up-flores.mp3", "Flores de bonus 🌸"], ["musica/fiesta-multijugador.mp3", "Fiesta multijugador 🎉"], ["musica/ultimo-nivel.mp3", "Un último nivel 🥹"], ["musica/mensaje-global.mp3", "Mensaje global 💌"], ["musica/puente-secreto.mp3", "Agua bajo el puente 🌉"], ["musica/modo-facil.mp3", "Modo fácil 🕹️"], ["musica/hola-jugador-2.mp3", "Hola, jugador 2 👋"], ["musica/mazmorra-de-amor.mp3", "Mazmorra de amor 🔒"], ["musica/sin-lag.mp3", "Sin lag, sin drama 😎"]];
+var au=new Audio(),bag=[],lastTr=-1,auOn=false,auFail=0,synthM=mus.onclick,sk=document.getElementById('sk');
+au.preload='none';au.volume=.45;
+function nextTrack(){
+  if(!bag.length){bag=MUS.map(function(m,i){return i}).sort(function(){return Math.random()-.5});if(bag[0]===lastTr&&bag.length>1)bag.push(bag.shift())}
+  lastTr=bag.shift();au.src=MUS[lastTr][0];
+  var pr=au.play();if(pr&&pr.catch)pr.catch(function(){});
+  toast('🎮 Ahora suena: '+MUS[lastTr][1]);
+}
+au.onended=function(){if(auOn)nextTrack()};
+au.onerror=function(){if(!auOn)return;if(++auFail>=3){auOn=false;sk.hidden=true;synthM()}else nextTrack()};
+au.onplaying=function(){auFail=0};
+mus.onclick=function(){
+  if(auOn){auOn=false;au.pause();mus.textContent='🎵';sk.hidden=true;return}
+  if(musOn){synthM();return}
+  auOn=true;auFail=0;mus.textContent='🔊';sk.hidden=false;nextTrack();
+};
+sk.onclick=function(){if(auOn)nextTrack()};
 function openEnv(){
   if(env.classList.contains('open'))return;
   stats.opens=(stats.opens||0)+1;if(new Date().getHours()<5)stats.night=1;if(SP){var mk=NOW.getFullYear()+'-'+NOW.getMonth();stats.m16=stats.m16||[];if(stats.m16.indexOf(mk)<0){stats.m16.push(mk);setTimeout(function(){toast('🎁 ¡Regalo del día 16!')},3500);setTimeout(award,4600)}if(ANN)stats.ann=1}save();checkAch();lastP=SP&&Math.random()<.65?pick(frases,lastP,SPN):pick(frases,lastP);lastF=pick(fotos,lastF);var ph=document.getElementById('phrase');ph.textContent=frases[lastP];ph.className='phrase'+(frases[lastP].length>60?' long':'');rep.href=wa('💌 Abrí tu carta y me tocó: «'+frases[lastP]+'» Te amo muchísimo 💛');document.getElementById('photo').src=fotos[lastF];
